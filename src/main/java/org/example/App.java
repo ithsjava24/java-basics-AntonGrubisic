@@ -120,7 +120,7 @@ public class App {
 
 
 
-    // Metod to find the best 4-hour charging period
+    // Metod för att hitta bästa värdena under 4h
     private static void displayBest4HourPeriod() {
         int bestStartHour = 0;
         double lowestAverage = Double.MAX_VALUE;
