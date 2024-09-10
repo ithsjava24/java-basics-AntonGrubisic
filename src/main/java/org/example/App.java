@@ -1,5 +1,6 @@
 package org.example;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class App {
@@ -48,7 +49,7 @@ public class App {
     // Metoden för menyn
     private static void printMenu() {
         System.out.print("""
-                \nElpriser
+                Elpriser
                 ========
                 1. Inmatning
                 2. Min, Max och Medel
@@ -75,6 +76,7 @@ public class App {
 
     // Metod för att visa min-, max- och medelpris.
     private static void displayMinMaxAverage() {
+        Locale.setDefault(new Locale("sv", "SE"));
         int minPrice = Integer.MAX_VALUE;
         int maxPrice = Integer.MIN_VALUE;
         int minHour = -1;
@@ -122,12 +124,12 @@ public class App {
 
     // Metod för att hitta bästa värdena under 4h
     private static void displayBest4HourPeriod() {
+        Locale.setDefault(new Locale("sv", "SE"));
         int bestStartHour = 0;
         double lowestAverage = Double.MAX_VALUE;
-
         for (int i = 0; i <= HOURS_IN_A_DAY - 4; i++) {
             int sum = prices[i] + prices[i + 1] + prices[i + 2] + prices[i + 3];
-            double average = sum / 4.0;
+            double average = (double) sum / 4;
             if (average < lowestAverage) {
                 lowestAverage = average;
                 bestStartHour = i;
