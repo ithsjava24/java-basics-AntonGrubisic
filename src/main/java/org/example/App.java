@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class App {
     private static final int HOURS_IN_A_DAY = 24;
     private static final int[] prices = new int[HOURS_IN_A_DAY]; // Lagrar array med pris/timma.
+    private static final int GRAPH_WIDTH = 76;
 
     public static void main(String[] args) {
         boolean running = true;
@@ -148,27 +149,18 @@ public class App {
         return String.format("%02d-%02d", hour, hour + 1);
     }
     private static void visualizePrices() {
-        int maxPrice = Arrays.stream(prices).max().orElse(0);  // Hitta maxpris för att skala grafen
-        int minPrice = Arrays.stream(prices).min().orElse(0);  // Hitta minpris för skala
+        int maxPrice = Arrays.stream(prices).max().orElse(1);  // Hitta maxpriset
+        int minPrice = Arrays.stream(prices).min().orElse(0);  // Hitta minpriset
+        int priceRange = maxPrice - minPrice;  // Prisspann
 
-        int priceRange = maxPrice - minPrice; // Prisspann för grafen
-        int width = 76;  // Grafens bredd
-
-        // Rita varje timme
+        // Normalisering av priserna så att de ryms i grafens bredd
+        System.out.println(maxPrice + "|");
         for (int i = 0; i < HOURS_IN_A_DAY; i++) {
-            int normalizedValue = (int) ((prices[i] - minPrice) / (double) priceRange * width);  // Normaliserar prisvärden för att passa grafens bredd
-            System.out.printf("%02d:00| ", i);  // Visa timme
-            for (int j = 0; j < normalizedValue; j++) {
-                System.out.print("x");
-            }
-            System.out.println();
+            int normalizedValue = (int) ((prices[i] - minPrice) / (double) priceRange * GRAPH_WIDTH);
+            System.out.printf("     | %s\n", "x".repeat(normalizedValue));
         }
-
-        // Rita en horisontell linje för att representera axeln
-        System.out.println("   |" + "-".repeat(width));
-
-        // Visa timmar under grafen
-        System.out.println("   | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23");
+        System.out.println(minPrice + "|------------------------------------------------------------------------");
+        System.out.println("     | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23");
     }
 
     // Hjälpmetod för att formatera tiden
