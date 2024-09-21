@@ -7,6 +7,7 @@ public class App {
     private static final int HOURS_IN_A_DAY = 24;
     private static final int[] prices = new int[HOURS_IN_A_DAY]; // Lagrar array med pris/timma.
     private static final int GRAPH_WIDTH = 76;
+    private static final int GRAPH_HEIGHT = 10;
 
     public static void main(String[] args) {
         boolean running = true;
@@ -153,14 +154,29 @@ public class App {
         int minPrice = Arrays.stream(prices).min().orElse(0);  // Hitta minpriset
         int priceRange = maxPrice - minPrice;  // Prisspann
 
-        // Normalisering av priserna så att de ryms i grafens bredd
-        System.out.println(maxPrice + "|");
-        for (int i = 0; i < HOURS_IN_A_DAY; i++) {
-            int normalizedValue = (int) ((prices[i] - minPrice) / (double) priceRange * GRAPH_WIDTH);
-            System.out.printf("     | %s\n", "x".repeat(normalizedValue));
+        // Skapa en 2D-array för visualiseringen
+        char[][] graph = new char[GRAPH_HEIGHT][HOURS_IN_A_DAY];
+        for (char[] row : graph) {
+            Arrays.fill(row, ' ');  // Fyll raderna med blanksteg
         }
-        System.out.println(minPrice + "|------------------------------------------------------------------------");
-        System.out.println("     | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23");
+
+        // Normalisera priserna till grafens höjd
+        for (int i = 0; i < HOURS_IN_A_DAY; i++) {
+            int normalizedValue = (int) ((prices[i] - minPrice) / (double) priceRange * (GRAPH_HEIGHT - 1));
+            graph[GRAPH_HEIGHT - 1 - normalizedValue][i] = 'x';  // Placera "x" uppifrån och ner
+        }
+
+        // Skriv ut grafen
+        for (int i = 0; i < GRAPH_HEIGHT; i++) {
+            System.out.printf("%4d| ", (maxPrice - (priceRange * i) / (GRAPH_HEIGHT - 1)));
+            for (int j = 0; j < HOURS_IN_A_DAY; j++) {
+                System.out.print(graph[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println("    |------------------------------------------------------------------------");
+        System.out.println("    | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23");
     }
 
     // Hjälpmetod för att formatera tiden
