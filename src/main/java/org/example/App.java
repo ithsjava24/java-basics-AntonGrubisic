@@ -150,33 +150,48 @@ public class App {
         return String.format("%02d-%02d", hour, hour + 1);
     }
     private static void visualizePrices() {
-        int maxPrice = Arrays.stream(prices).max().orElse(1);  // Hitta maxpriset
-        int minPrice = Arrays.stream(prices).min().orElse(0);  // Hitta minpriset
-        int priceRange = maxPrice - minPrice;  // Prisspann
+        int graphHeight = 5; // Antalet nivåer i grafen (100, -12 och mellanliggande nivåer)
+        int graphWidth = 76; // Bredden av grafen för timmarna
 
-        // Skapa en 2D-array för visualiseringen
-        char[][] graph = new char[GRAPH_HEIGHT][HOURS_IN_A_DAY];
-        for (char[] row : graph) {
-            Arrays.fill(row, ' ');  // Fyll raderna med blanksteg
-        }
+        // Normalisera priserna till ett intervall mellan 0 och 4 för grafens höjd
+        int maxPrice = 100;
+        int minPrice = -12;
 
-        // Normalisera priserna till grafens höjd
-        for (int i = 0; i < HOURS_IN_A_DAY; i++) {
-            int normalizedValue = (int) ((prices[i] - minPrice) / (double) priceRange * (GRAPH_HEIGHT - 1));
-            graph[GRAPH_HEIGHT - 1 - normalizedValue][i] = 'x';  // Placera "x" uppifrån och ner
-        }
+        // Loopa igenom de olika nivåerna (top to bottom)
+        for (int y = graphHeight - 1; y >= 0; y--) {
+            if (y == graphHeight - 1) {
+                System.out.printf("%4d|", maxPrice); // Skriv ut 100 på översta raden
+            } else if (y == 0) {
+                System.out.printf("%4d|", minPrice); // Skriv ut -12 på nedersta raden
+            } else {
+                System.out.print("    |"); // Tomma rader emellan
+            }
 
-        // Skriv ut grafen
-        for (int i = 0; i < GRAPH_HEIGHT; i++) {
-            System.out.printf("%4d| ", (maxPrice - (priceRange * i) / (GRAPH_HEIGHT - 1)));
-            for (int j = 0; j < HOURS_IN_A_DAY; j++) {
-                System.out.print(graph[i][j] + " ");
+            // Rita grafen för varje timme (från 00 till 23)
+            for (int x = 0; x < HOURS_IN_A_DAY; x++) {
+                int normalizedPrice = (prices[x] - minPrice) * (graphHeight - 1) / (maxPrice - minPrice);
+                if (normalizedPrice >= y) {
+                    System.out.print("  x");
+                } else {
+                    System.out.print("   "); // Tom plats där ingen "x" visas
+                }
             }
             System.out.println();
         }
 
-        System.out.println("    |------------------------------------------------------------------------");
-        System.out.println("    | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23");
+        // Rita den horisontella linjen under grafen
+        System.out.print("    |");
+        for (int i = 0; i < graphWidth; i++) {
+            System.out.print("-");
+        }
+        System.out.println();
+
+        // Skriv ut timmarna (00 till 23) längst ner
+        System.out.print("     ");
+        for (int i = 0; i < HOURS_IN_A_DAY; i++) {
+            System.out.printf("%02d ", i);
+        }
+        System.out.println();
     }
 
     // Hjälpmetod för att formatera tiden
