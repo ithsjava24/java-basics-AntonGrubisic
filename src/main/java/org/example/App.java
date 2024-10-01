@@ -150,51 +150,57 @@ public class App {
         return String.format("%02d-%02d", hour, hour + 1);
     }
     private static void visualizePrices() {
-        int graphHeight = 5; // Antalet nivåer i grafen (100, -12 och mellanliggande nivåer)
-        int graphWidth = 76; // Bredden av grafen för timmarna
+        int maxPris = Arrays.stream(prices).max().orElse(1);
+        int minPris = Arrays.stream(prices).min().orElse(1);
+        final int HEIGHT = 6;
+        final int COLUMN_COUNT = prices.length;
+        final float DIFFERENCE = (maxPris - minPris) / (HEIGHT - 1f);
 
-        // Normalisera priserna till ett intervall mellan 0 och 4 för grafens höjd
-        int maxPrice = 100;
-        int minPrice = -12;
+        System.out.println("Visualisering av elpriser:");
 
-        // Loopa igenom de olika nivåerna (top to bottom)
-        for (int y = graphHeight - 1; y >= 0; y--) {
-            if (y == graphHeight - 1) {
-                System.out.printf("%4d|", maxPrice); // Skriv ut 100 på översta raden
-            } else if (y == 0) {
-                System.out.printf("%4d|", minPrice); // Skriv ut -12 på nedersta raden
+
+        for (int i = HEIGHT; i > 0; i--) {
+            StringBuilder output = new StringBuilder();
+            int lowerBound = (i == 1) ? minPris : (int) (maxPris - (HEIGHT - i) * DIFFERENCE);
+
+            int maxLength = Integer.toString(maxPris).length();
+            int minLength = Integer.toString(minPris).length();
+            int longest = Math.max(maxLength, minLength);
+
+
+            if (i == HEIGHT) {
+                String spaces = maxLength < longest ? addSpaces(longest - maxLength) : "";
+                output.append(spaces).append(maxPris).append("|");
+            } else if (i == 1) {
+                String spaces = minLength < longest ? addSpaces(longest - minLength) : "";
+                output.append(spaces).append(minPris).append("|");
             } else {
-                System.out.print("    |"); // Tomma rader emellan
+                output.append(addSpaces(longest)).append("|");
             }
 
-            // Rita grafen för varje timme (från 00 till 23)
-            for (int x = 0; x < HOURS_IN_A_DAY; x++) {
-                int normalizedPrice = (prices[x] - minPrice) * (graphHeight - 1) / (maxPrice - minPrice);
-                if (normalizedPrice >= y) {
-                    System.out.print("  x");
+
+            for (int j = 0; j < COLUMN_COUNT; j++) {
+                int currentPrice = prices[j];
+                if (currentPrice >= lowerBound) {
+                    output.append("  x");
                 } else {
-                    System.out.print("   "); // Tom plats där ingen "x" visas
+                    output.append("   ");
                 }
             }
-            System.out.println();
+            System.out.println(output);
         }
 
-        // Rita den horisontella linjen under grafen
-        System.out.print("    |");
-        for (int i = 0; i < graphWidth; i++) {
-            System.out.print("-");
-        }
-        System.out.println();
 
-        // Skriv ut timmarna (00 till 23) längst ner
-        System.out.print("     ");
-        for (int i = 0; i < HOURS_IN_A_DAY; i++) {
-            System.out.printf("%02d ", i);
-        }
-        System.out.println();
+        System.out.print("   |------------------------------------------------------------------------\n");
+        System.out.print("   | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23\n");
     }
 
-    // Hjälpmetod för att formatera tiden
+
+    private static String addSpaces(int count) {
+        return " ".repeat(count);
+    }
+
+
     private static String formatTime(int hour) {
         return String.format("%02d-%02d", hour, hour + 1);
     }
